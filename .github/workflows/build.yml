@@ -19,28 +19,23 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
-    - name: Check project structure
-      run: |
-        echo "=== Project Structure ==="
-        ls -la
-        echo ""
-        echo "=== Checking gradlew ==="
-        file ./gradlew || echo "gradlew not found"
-        echo ""
-        echo "=== Checking build.gradle ==="
-        ls -la build.gradle* || echo "build.gradle not found"
-        echo ""
-        echo "=== Checking app directory ==="
-        ls -la app/ || echo "app directory not found"
-
     - name: Make gradlew executable
       run: chmod +x ./gradlew
 
+    - name: Remove corrupted gradlew
+      run: rm -f ./gradlew ./gradlew.bat
+
+    - name: Generate new gradle wrapper
+      run: gradle wrapper --gradle-version=7.6
+
+    - name: Make new gradlew executable
+      run: chmod +x ./gradlew
+
     - name: Build with Gradle
-      run: ./gradlew build --stacktrace
+      run: ./gradlew build
 
     - name: Build APK
-      run: ./gradlew assembleDebug --stacktrace
+      run: ./gradlew assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
