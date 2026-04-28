@@ -22,11 +22,16 @@ jobs:
     - name: Make gradlew executable
       run: chmod +x ./gradlew
 
+    - name: Fix gradlew script
+      run: |
+        sed -i 's/-Xmx64m//g' ./gradlew
+        sed -i 's/-XX:MaxPermSize=[^ ]*//g' ./gradlew
+
     - name: Build with Gradle
-      run: ./gradlew build -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxPermSize=512m"
+      run: ./gradlew build
 
     - name: Build APK
-      run: ./gradlew assembleDebug -Dorg.gradle.jvmargs="-Xmx2048m -XX:MaxPermSize=512m"
+      run: ./gradlew assembleDebug
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
