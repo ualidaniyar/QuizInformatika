@@ -19,8 +19,35 @@ jobs:
         java-version: '17'
         distribution: 'adopt'
 
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
+    - name: Debug - Show gradlew content
+      run: |
+        echo "=== First 50 lines of gradlew ==="
+        head -50 ./gradlew || echo "gradlew not found"
+
+    - name: Remove broken gradlew
+      run: |
+        rm -f ./gradlew
+        rm -f ./gradlew.bat
+        rm -rf gradle/
+
+    - name: Create gradle wrapper
+      run: |
+        mkdir -p gradle/wrapper
+        wget -O gradle/wrapper/gradle-wrapper.jar https://repo.gradle.org/gradle/gradle-9.4.1-wrapper.jar
+        echo 'distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-9.4.1-bin.zip
+networkTimeout=10000
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists' > gradle/wrapper/gradle-wrapper.properties
+
+    - name: Create gradlew script
+      run: |
+        cat > gradlew << 'EOF'
+#!/usr/bin/env sh
+exec gradle "$@"
+EOF
+        chmod +x ./gradlew
 
     - name: Build with Gradle
       run: ./gradlew build
