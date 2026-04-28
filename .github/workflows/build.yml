@@ -19,19 +19,28 @@ jobs:
         java-version: '11'
         distribution: 'adopt'
 
+    - name: Check project structure
+      run: |
+        echo "=== Project Structure ==="
+        ls -la
+        echo ""
+        echo "=== Checking gradlew ==="
+        file ./gradlew || echo "gradlew not found"
+        echo ""
+        echo "=== Checking build.gradle ==="
+        ls -la build.gradle* || echo "build.gradle not found"
+        echo ""
+        echo "=== Checking app directory ==="
+        ls -la app/ || echo "app directory not found"
+
     - name: Make gradlew executable
       run: chmod +x ./gradlew
 
-    - name: Fix gradlew script
-      run: |
-        sed -i 's/-Xmx64m//g' ./gradlew
-        sed -i 's/-XX:MaxPermSize=[^ ]*//g' ./gradlew
-
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build --stacktrace
 
     - name: Build APK
-      run: ./gradlew assembleDebug
+      run: ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
